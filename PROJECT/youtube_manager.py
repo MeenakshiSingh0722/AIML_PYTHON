@@ -4,18 +4,21 @@ def load_data():
     try:
         with open('youtube.txt','r') as file:
             test=json.load(file)
-            print(test)
             return test
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         return []
 
 def save_data_helper(videos):
-    with open ('youtube.txt','w') as file:
-        json.dumps(videos,file)
+    with open('youtube.txt','w') as file:
+        json.dump(videos, file)
 
 def list_all_video(videos):
+    print("\n")
+    print("*"*70)
     for index, video in enumerate(videos,start=1):
-        print(f"{index}.")
+        print(f"{index}.{video['name']},duration :{video['time']}")
+    print("\n")
+    print("*"*70)
 
 def add_video(videos):
     name=input("enter video name: ")
@@ -23,12 +26,26 @@ def add_video(videos):
     videos.append({'name': name,'time': time})
     save_data_helper(videos)
 
-
 def update_video(videos):
-    pass
+    list_all_video(videos)
+    index=int(input("enter the video number to update "))
+    if 1<=index<=len(videos):
+        name=input("enter the new video name ")
+        time=input("enter the new video time ")
+        videos[index-1]={'name' :name,'time': time}
+        save_data_helper(videos)
+    else:
+        print("invalid index selected")
 
 def delete_video(videos):
-    pass
+    list_all_video(videos)
+    index=int(input("enter the video number to be deleted "))
+
+    if 1<=index<=len(videos):
+        del videos[index-1]
+        save_data_helper(videos)
+    else:
+        print("invalid video index selected")
 
 def main():
     videos=load_data()
@@ -56,7 +73,5 @@ def main():
             case _:
                 print("invalid choice")
 
-if __name__=="__main__":
+if __name__== "__main__":
     main()
-
-
