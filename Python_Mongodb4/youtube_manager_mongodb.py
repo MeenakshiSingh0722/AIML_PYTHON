@@ -1,0 +1,56 @@
+from bson import ObjectId
+from pymongo import MongoClient
+
+client=MongoClient("mongodb+srv://<username>:<Password>@cluster0.bk3ic62.mongodb.net/",tlsAllowInvalidCertificates=True)
+# not a good idea to include id and password in code file
+# tlsAllowInvalidCertificates=True -> not a good way to handle ssl
+
+db=client["ytmanager"]
+video_collection=db["video"]
+print(video_collection)
+
+def list_video():
+    for vid in video_collection.find():
+        print(f"ID: {vid['_id']}, Name:{vid['name']} and Time: {vid['time']} ")
+
+def add_video(name,time):
+    video_collection.insert_one({"name": name, "time":time})
+
+def update_video(video_id, new_name, new_time):
+    video_collection.update_one({'_id': ObjectId(video_id)}, {"$set": {"name": new_name, "time": new_time}})
+
+def delete_video(video_id):
+    video_collection.delete_one({"_id": ObjectId(video_id)})
+
+
+def main():
+    while True:
+        print("\n Youtube manager App")
+        print("1. List all videos")
+        print("2. Add a youtube video")
+        print("3. Update a youtube video details")
+        print("4. Delete a youtube video")
+        print("5. Exit the app")
+        choice=input("enter your choice")
+
+        if choice=='1':
+            list_video()
+        elif choice=='2':
+            name=input("enter the video name: ")
+            time=input("enter the video time: ")
+            add_video(name,time)
+        elif choice=='3':
+            video_id=input("enter the video id to update: ")
+            name=input("enter the video name: ")
+            time=input("enter the video time: ")
+            update_video(video_id,name,time)
+        elif choice=='4':
+            video_id=input("enter the video id to delete: ")
+            delete_video(video_id)
+        elif choice=='5':
+            break
+        else:
+            print("Invalid choice")
+
+if __name__=="__main__":
+    main()
